@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "jsonfile": "^6.1.0",
     "move-file": "^2.0.0",
     "object-sizeof": "^1.6.1"
   }

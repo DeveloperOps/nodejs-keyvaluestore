@@ -2,9 +2,7 @@ const fs = require('fs');
 const move = require('move-file');
 const sizeOf = require('object-sizeof');
 const dotenv = require('dotenv');
-const jsonfile = require('jsonfile');
 dotenv.config();
-
 
 const keystore = {
   instance: (path = "/keystore/") => {
@@ -41,7 +39,7 @@ const keystore = {
       if(err) throw err;
       const json = (JSON.parse(data));
       if(json[key]) console.log(json[key])
-      else console.log("Not found!!");
+      else console.error("Not found!!");
     })
   },
   delete: (key) => {
@@ -49,10 +47,11 @@ const keystore = {
     fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
       if(err) throw err;
       const json = (JSON.parse(data));
-      json[key] = value;
+      if(json[key]) delete json[key];
+      else return console.error("Key not found!!");
       fs.writeFile(`${__dirname}/keystore/keystore.json` , JSON.stringify(json) , (err) => {
         if(err) throw err;
-        console.log("Written");
+        console.log("Deleted");
       })
     })
   }
