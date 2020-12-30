@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.3",
     "move-file": "^2.0.0",
     "object-sizeof": "^1.6.1"
   }

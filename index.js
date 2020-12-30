@@ -1,3 +1,3 @@
 const keystore = require('./keyvalue');
-
-keystore();
+//i'm following the singleton approach
+keystore.instance();
