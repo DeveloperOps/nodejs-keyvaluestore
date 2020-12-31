@@ -2,6 +2,7 @@ const fs = require('fs');
 const move = require('move-file');
 const sizeOf = require('object-sizeof');
 const dotenv = require('dotenv');
+
 dotenv.config();
 
 const createData = (object) => {
@@ -57,20 +58,20 @@ const keystore = {
         .catch(err => { throw err });
       });
     }else{
-      console.log("Store already initialize!!");
+      console.log("Store already initialized!!");
     }
   },
   create: (key , value , ttl = null) => {
     return new Promise((resolve , reject) => {
       if(key.length > 32) reject("Key must be smaller than 32 chars");
       if(sizeOf(value) > 128000) reject("Value must be less than 16KB in size");
-      fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
+      fs.readFile(`${process.env.STORE}` , (err , data) => {
         if(err) reject(err);
         const json = JSON.parse(data);
         if(json[key]) {
           if(checkTTL(json,key)) {
+            if(ttl !== null) value["ttl"] = Date.now() + ttl;
             json[key] = value;
-            console.log(json);
             createData(json);
             return;
           }
@@ -101,7 +102,7 @@ const keystore = {
       });
     });
   },
-  delete: (key) => {
+  deletekey: (key) => {
     if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
     fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
       if(err) throw err;
