@@ -1,3 +1,7 @@
 const keystore = require('./keyvalue');
 //i'm following the singleton approach
-keystore.instance();
+const {instance} = keystore;
+const localintance = async() => {
+  await instance();
+}
+localintance();

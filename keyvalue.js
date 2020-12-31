@@ -21,7 +21,7 @@ const checkTTL = (json , key) => {
 }
 
 const constructGlobal = () => {
-  fs.appendFile("global.json" , JSON.stringify({ set: true }) , (err) => {
+  fs.appendFile("global.json" , JSON.stringify({ set: __dirname }) , (err) => {
     if(err) throw err;
     move("global.json" , 'C://globalKey/global.json')
     .then(()=>{ console.log("Instance generated!") })
@@ -32,32 +32,32 @@ const constructGlobal = () => {
 const readGlobal = () => {
   return new Promise((resolve , reject) => {
     fs.readFile("C://globalKey/global.json" , (err , data) => {
-      if(err) reject(err);
+      if(err) {resolve(false); return;}
       const jObj = JSON.parse(data);
       resolve(jObj.set);
     })
   });
-
 }
 
 const keystore = {
   instance: async(path = "/keystore/") => {
   const global = await readGlobal();
-  if(global) return "Keystore already initialized";
-    
-  constructGlobal();
+  if(global === false) constructGlobal();
+  else if(!global === __dirname) return {err: "Data store already initialized"};
   if(process.env.STORE === undefined) {
-      fs.appendFile("keystore.json" , {} , (err) => {
+      fs.appendFile("keystore.json" , JSON.stringify({}) , (err) => {
         if(err) throw err;
         move("keystore.json" , __dirname +`${path}keystore.json`)
         .then(()=>{ 
-          fs.appendFile(".env" , `STORE = ${__dirname}${path}keystore.json` , (err) => {
+         fs.appendFile(".env" , `STORE = ${__dirname}${path}keystore.json` , (err) => { 
             if(err) throw err;
             console.log("File created!!");
           });
         })
         .catch(err => { throw err });
       });
+    }else{
+      console.log("Store already initialize!!");
     }
   },
   create: (key , value , ttl = null) => {
