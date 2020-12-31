@@ -2,7 +2,15 @@ const fs = require('fs');
 const move = require('move-file');
 const sizeOf = require('object-sizeof');
 const dotenv = require('dotenv');
+const { resolve } = require('path');
 dotenv.config();
+
+const createData = (object) => {
+  fs.writeFile(`${__dirname}/keystore/keystore.json` , JSON.stringify(object) , (err) => {
+    if(err) throw err;
+    console.log("written");
+  });
+}
 
 const keystore = {
   instance: (path = "/keystore/") => {
@@ -20,27 +28,38 @@ const keystore = {
       });
     }
   },
-  create: (key , value) => {
-    if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
-    if(sizeOf(value) > 128000) throw new Error("Value must be less than 16KB in size");
-    fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
-      if(err) throw err;
-      const json = (JSON.parse(data));
-      json[key] = value;
-      fs.writeFile(`${__dirname}/keystore/keystore.json` , JSON.stringify(json) , (err) => {
+  create: (key , value , ttl = null) => {
+    return new Promise((resolve , reject) => {
+      if(key.length > 32) reject("Key must be smaller than 32 chars");
+      if(sizeOf(value) > 128000) reject("Value must be less than 16KB in size");
+      fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
         if(err) throw err;
-        console.log("Written");
-      })
-    })
+        const json = JSON.parse(data);
+        if(ttl !== null) value["ttl"] = Date.now() + ttl;
+        json[key] = value;
+        createData(json);
+        resolve(true);
+      });
+    });
   },
   read: (key) => {
     if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
     fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
       if(err) throw err;
       const json = (JSON.parse(data));
-      if(json[key]) console.log(json[key])
+      if(json[key]){
+        if(json[key].ttl){
+          if(json[key].ttl < Date.now()) {
+            delete json[key];
+            createData(json);
+            console.log("Data expired");
+            return;
+          }
+        }
+        console.log(json[key]);
+      }
       else console.error("Not found!!");
-    })
+    });
   },
   delete: (key) => {
     if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
