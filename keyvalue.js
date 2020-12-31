@@ -2,7 +2,6 @@ const fs = require('fs');
 const move = require('move-file');
 const sizeOf = require('object-sizeof');
 const dotenv = require('dotenv');
-const { resolve } = require('path');
 dotenv.config();
 
 const createData = (object) => {
@@ -11,6 +10,16 @@ const createData = (object) => {
     console.log("written");
   });
 }
+
+const checkTTL = (json , key) => {
+  if(json[key].ttl < Date.now()) {
+    delete json[key];
+    createData(json);
+    return true;
+  }
+  return false;
+}
+
 
 const keystore = {
   instance: (path = "/keystore/") => {
@@ -33,8 +42,18 @@ const keystore = {
       if(key.length > 32) reject("Key must be smaller than 32 chars");
       if(sizeOf(value) > 128000) reject("Value must be less than 16KB in size");
       fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
-        if(err) throw err;
+        if(err) reject(err);
         const json = JSON.parse(data);
+        if(json[key]) {
+          if(checkTTL(json,key)) {
+            json[key] = value;
+            console.log(json);
+            createData(json);
+            return;
+          }
+          reject("key already exists")
+          return;
+        }
         if(ttl !== null) value["ttl"] = Date.now() + ttl;
         json[key] = value;
         createData(json);
@@ -43,22 +62,20 @@ const keystore = {
     });
   },
   read: (key) => {
-    if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
-    fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
-      if(err) throw err;
-      const json = (JSON.parse(data));
-      if(json[key]){
-        if(json[key].ttl){
-          if(json[key].ttl < Date.now()) {
-            delete json[key];
-            createData(json);
-            console.log("Data expired");
-            return;
+    return new Promise((resolve , reject) => {
+      if(key.length > 32) reject("Key must be smaller than 32 chars");
+      fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
+        if(err) reject(err);
+        const json = (JSON.parse(data));
+        if(json[key]){
+          if(json[key].ttl){
+            const ttlResult = checkTTL(json , key);
+            if(ttlResult){ resolve("Data Expired"); return; }
           }
+          resolve(json[key]);
         }
-        console.log(json[key]);
-      }
-      else console.error("Not found!!");
+        else resolve("Not found!!");
+      });
     });
   },
   delete: (key) => {
