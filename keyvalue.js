@@ -20,9 +20,32 @@ const checkTTL = (json , key) => {
   return false;
 }
 
+const constructGlobal = () => {
+  fs.appendFile("global.json" , JSON.stringify({ set: true }) , (err) => {
+    if(err) throw err;
+    move("global.json" , 'C://globalKey/global.json')
+    .then(()=>{ console.log("Instance generated!") })
+    .catch(err => { throw err });
+  });
+}
+
+const readGlobal = () => {
+  return new Promise((resolve , reject) => {
+    fs.readFile("C://globalKey/global.json" , (err , data) => {
+      if(err) reject(err);
+      const jObj = JSON.parse(data);
+      resolve(jObj.set);
+    })
+  });
+
+}
 
 const keystore = {
-  instance: (path = "/keystore/") => {
+  instance: async(path = "/keystore/") => {
+  const global = await readGlobal();
+  if(global) return "Keystore already initialized";
+    
+  constructGlobal();
   if(process.env.STORE === undefined) {
       fs.appendFile("keystore.json" , {} , (err) => {
         if(err) throw err;
