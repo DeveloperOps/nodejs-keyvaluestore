@@ -1,5 +1,5 @@
 # Node js Keyvalue store
-    -Run npm install install required dependencies
+    -Run npm install to install required dependencies
     -Note 1 - Make sure to use async/await for multiple asynchronus calls
     -Note 2 - Specifically for windows os
 # Key store API
