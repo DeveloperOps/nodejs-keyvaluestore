@@ -9,7 +9,6 @@ const createData = (object) => {
   fs.writeFileSync(`${process.env.STORE}` , JSON.stringify(object) , (err) => {
     if(err) throw err;
   });
-  console.log("written");
 }
 
 const checkTTL = (json , key) => {
@@ -81,7 +80,6 @@ const keystore = {
             if(ttl !== null) value["ttl"] = Date.now() + ttl;
             json[key] = value;
             createData(json);
-            return;
           }
           console.log("key already exists")
           return;
