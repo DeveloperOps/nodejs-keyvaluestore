@@ -1,4 +1,5 @@
 const synchronus = require('./syncKeystroe');
+//Make sure to run init.js before using this file
 synchronus.create("code1" , {code: "coding"} , 20000);
 synchronus.create("code2" , {code: "coding"} , 20000);
 synchronus.create("code3" , {code: "coding"} , 20000);
