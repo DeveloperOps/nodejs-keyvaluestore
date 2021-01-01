@@ -1,4 +1,4 @@
-const keystore = require('./keyvalue');
+const keystore = require('./AsyncKeystore');
 const {instance , create , read , deletekey} = keystore;
 
 //Instance
@@ -17,8 +17,6 @@ const createfunc = async() => {
     console.log(error);
   }
 }
-
-createfunc().catch(err => console.log(err));
 
 
 //read values
