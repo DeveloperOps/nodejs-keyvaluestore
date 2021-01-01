@@ -2,7 +2,7 @@ const keystore = require('./keyvalue');
 const {instance , create , read , deletekey} = keystore;
 
 //Instance
-//instance().catch(err => console.log(err));
+instance().catch(err => console.log(err));
 
 //create values
 const createfunc = async() => {
@@ -18,7 +18,7 @@ const createfunc = async() => {
   }
 }
 
-//createfunc().catch(err => console.log(err));
+createfunc().catch(err => console.log(err));
 
 
 //read values
@@ -26,10 +26,6 @@ const readData = async() => {
   try {
     const val = await read("code4");
     console.log(val);
-    const val1 = await read("code5");
-    console.log(val1);
-    const val2 = await read("code6");
-    console.log(val2);
   } catch (error) {
     console.log(error)
   }
@@ -41,8 +37,6 @@ const readData = async() => {
 const deletekeys = async() => {
   try {
     await deletekey("code1")
-    await deletekey("code2")
-    await deletekey("code3")
   } catch (error) {
     console.log(error);
   }

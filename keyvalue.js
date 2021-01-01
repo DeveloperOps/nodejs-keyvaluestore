@@ -2,11 +2,12 @@ const fs = require('fs');
 const move = require('move-file');
 const sizeOf = require('object-sizeof');
 const dotenv = require('dotenv');
+const { resolve } = require('path');
 
 dotenv.config();
 
 const createData = (object) => {
-  fs.writeFile(`${__dirname}/keystore/keystore.json` , JSON.stringify(object) , (err) => {
+  fs.writeFileSync(`${process.env.STORE}` , JSON.stringify(object) , (err) => {
     if(err) throw err;
     console.log("written");
   });
@@ -39,6 +40,7 @@ const readGlobal = () => {
     })
   });
 }
+
 
 const keystore = {
   instance: async(path = "/keystore/") => {
@@ -88,7 +90,7 @@ const keystore = {
   read: (key) => {
     return new Promise((resolve , reject) => {
       if(key.length > 32) reject("Key must be smaller than 32 chars");
-      fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
+      fs.readFile(`${process.env.STORE}` , (err , data) => {
         if(err) reject(err);
         const json = (JSON.parse(data));
         if(json[key]){
@@ -103,16 +105,18 @@ const keystore = {
     });
   },
   deletekey: (key) => {
-    if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
-    fs.readFile(`${__dirname}/keystore/keystore.json` , (err , data) => {
-      if(err) throw err;
-      const json = (JSON.parse(data));
-      if(json[key]) delete json[key];
-      else return console.error("Key not found!!");
-      fs.writeFile(`${__dirname}/keystore/keystore.json` , JSON.stringify(json) , (err) => {
-        if(err) throw err;
-        console.log("Deleted");
-      })
+    return new Promise((resolve , reject) => {
+      if(key.length > 32) throw new Error("Key must be smaller than 32 chars");
+      fs.readFile(`${process.env.STORE}` , (err , data) => {
+        if(err) reject(err);
+        const json = (JSON.parse(data));
+        if(json[key]) delete json[key];
+        else return resolve("Key not found!!");
+        fs.writeFile(`${process.env.STORE}` , JSON.stringify(json) , (err) => {
+          if(err) reject(err);
+          resolve("Deleted");
+        })
+      });
     })
   }
 };
