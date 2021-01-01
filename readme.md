@@ -30,7 +30,7 @@
     - Store file size capped upto 1GB
 
 # Key store API
-    -Main utils file => keyvalue.js 
+    -Main utils file => syncKeyStore.js , AsynckeyStore.js 
 
 # There are two ways to use this util file:
     -Normally import the lib and use object apis ie (create, read, deletekeys);
