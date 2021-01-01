@@ -64,8 +64,16 @@ const keystore = {
     }
   },
   create: (key , value , ttl = null) => {
-      if(key.length > 32) reject("Key must be smaller than 32 chars");
-      if(sizeOf(value) > 128000) reject("Value must be less than 16KB in size");
+      if(key.length > 32) console.log("Key must be smaller than 32 chars");
+      if(sizeOf(value) > 128000) console.log("Value must be less than 16KB in size");
+
+      const stats = fs.statSync(`${process.env.STORE}`);
+      if(stats) {
+        const fileSizeInBytes = stats.size;
+        const fileSizeInMegabytes = fileSizeInBytes / (1024*1024);
+        if(fileSizeInMegabytes > 1000) console.log("Store limit exceeded(capped to 1GB only)")
+      }
+
        const jsonBuffer = fs.readFileSync(`${process.env.STORE}`)
        const json = JSON.parse(jsonBuffer);
         if(json[key]) {

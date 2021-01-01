@@ -1,7 +1,8 @@
 # Node js Keyvalue store
     -Run npm install to install required dependencies
-    -Note 1 - Make sure to use async/await for multiple asynchronus calls
-    -Note 2 - Specifically for windows os
+    -Note 1 - Make sure to intialize your store before executing any other apis (ie check init.js);
+    -Note 2 - Make sure to use async/await for multiple asynchronus calls
+    -Note 3 - Supported for windows os
 
 # Main Files
     -syncKeystore.js (Test file SyncIndex.js)
@@ -23,7 +24,7 @@
     - Create a global config file inside your C://globalKey/global.json to ensure that no other project can use the same api again.
     - There are three methods in both versions ie create , read , delete
     - Key is capped upto 32 chars and value is upto 16kb
-
+    - Store file size capped upto 1GB
 
 # Key store API
     -Main utils file => keyvalue.js 
@@ -46,3 +47,8 @@
 # deletekeys
     -Pass key it will delete the value from store
 
+# Steps to execute 
+    - Run init.js file to initialize your store.
+    - After initialization import Synckeystore or Asynckeystore in your main.js file 
+    - I'm moving further with Syncstore (Check SyncIndex.js)
+    - After importing the store you can use all the apis (See SyncIndex.js)

@@ -55,18 +55,27 @@ const keystore = {
          fs.appendFile(".env" , `STORE = ${__dirname}${path}keystore.json` , (err) => { 
             if(err) throw err;
             console.log("File created!!");
+            return true;
           });
         })
         .catch(err => { throw err });
       });
     }else{
       console.log("Store already initialized!!");
+      return true;
     }
   },
   create: (key , value , ttl = null) => {
     return new Promise((resolve , reject) => {
       if(key.length > 32) reject("Key must be smaller than 32 chars");
       if(sizeOf(value) > 128000) reject("Value must be less than 16KB in size");
+      const stats = fs.statSync(`${process.env.STORE}`);
+      if(stats) {
+        const fileSizeInBytes = stats.size;
+        const fileSizeInMegabytes = fileSizeInBytes / (1024*1024);
+        if(fileSizeInMegabytes > 1000) reject("Store limit exceeded(capped to 1GB only)")
+      }
+
       fs.readFile(`${process.env.STORE}` , (err , data) => {
         if(err) reject(err);
         const json = JSON.parse(data);
