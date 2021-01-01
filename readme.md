@@ -2,6 +2,29 @@
     -Run npm install to install required dependencies
     -Note 1 - Make sure to use async/await for multiple asynchronus calls
     -Note 2 - Specifically for windows os
+
+# Main Files
+    -syncKeystore.js (Test file SyncIndex.js)
+    -AsyncKeystore.js (Test file Asyncindex.js)
+    -classes.js (Test file classBasedIndex.js)
+
+
+# SyncKeystore
+    - Instance api - This api is asynchronus after success you can work with all the apis
+
+# AsyncKeystore
+    - All apis are asynchronus have to use async await for better results
+
+# Class Based
+    - All Asynchronus apis in a class to use them as an object
+
+# Properties
+    - Creates .env file to store location of store file
+    - Create a global config file inside your C://globalKey/global.json to ensure that no other project can use the same api again.
+    - There are three methods in both versions ie create , read , delete
+    - Key is capped upto 32 chars and value is upto 16kb
+
+
 # Key store API
     -Main utils file => keyvalue.js 
 
