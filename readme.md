@@ -4,6 +4,9 @@
     -Note 2 - Make sure to use async/await for multiple asynchronus calls
     -Note 3 - Supported for windows os
 
+# Support
+    - Windows OS
+
 # Main Files
     -syncKeystore.js (Test file SyncIndex.js)
     -AsyncKeystore.js (Test file Asyncindex.js)
